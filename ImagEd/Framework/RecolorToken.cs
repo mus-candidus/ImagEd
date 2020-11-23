@@ -19,9 +19,6 @@ namespace ImagEd.Framework {
         // Required to implement UpdateContext() .
         private bool mustUpdateContext_ = false;
 
-        // Difference between MS XNA and MonoGame: XNA doesn't provide named colors.
-        private static readonly Color TransparentBlack = new Color(0, 0, 0, 0);
-
         public RecolorToken(IModHelper helper, IMonitor monitor) {
             helper_  = helper;
             monitor_ = monitor;
@@ -141,9 +138,8 @@ namespace ImagEd.Framework {
                 Color pixel = Desaturation.Desaturate(sourcePixels[i], desaturationMode);
                 // Treat mask as grayscale (luma).
                 byte maskValue = Desaturation.Desaturate(maskPixels[i], Desaturation.Mode.DesaturateLuma).R;
-                extractedPixels[i] = maskValue > 0
-                                   ? pixel * (maskValue / 255)
-                                   : TransparentBlack;
+                // Multiplication is all we need: If maskValue is zero the resulting pixel is zero (TrasparentBlack).
+                extractedPixels[i] = pixel * (maskValue / 255.0f);
             }
 
             return Utility.ArrayToTexture(extractedPixels, source.Width, source.Height);
