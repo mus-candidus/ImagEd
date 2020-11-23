@@ -12,7 +12,7 @@ Provides the token **ImageEd/Recolor** which takes an image to recolor and optio
 
 **ImagEd/Recolor** takes 6 arguments:
 
-1. Content pack that uses reloring. This is usually the content pack that contains the current config.json but a custom CP token doesn't have that information so we must provide it.
+1. Content pack that uses recoloring. This is usually the content pack that contains the current config.json but a custom CP token doesn't have that information so we must provide it.
 2. Asset name.
 3. Source image or "gamecontent" to load a vanilla asset.
 4. Mask image or "none". Mask is supposed to be a grayscale image so we always desaturate it (mode is DesaturateLuma).
