@@ -19,6 +19,9 @@ namespace ImagEd.Framework {
         // Required to implement UpdateContext() .
         private bool mustUpdateContext_ = false;
 
+        /// <summary>Indicates whether the token is enabled.</summary>
+        internal bool Enabled { get; set; }
+
         public RecolorToken(IModHelper helper, IMonitor monitor) {
             helper_  = helper;
             monitor_ = monitor;
@@ -62,7 +65,7 @@ namespace ImagEd.Framework {
         }
 
         /// <summary>Get whether the token is available for use.</summary>
-        public bool IsReady() => true;
+        public bool IsReady() => this.Enabled;
 
         /// <summary>Get the current values.</summary>
         /// <param name="input">The input argument, if applicable.</param>
