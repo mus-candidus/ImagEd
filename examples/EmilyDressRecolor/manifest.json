@@ -1,0 +1,18 @@
+{
+   "Name": "EmilyDressRecolor",
+   "Author": "Candidus42",
+   "Version": "1.0.0",
+   "Description": "",
+   "UniqueID": "Candidus42.EmilyDressRecolor",
+   "MinimumApiVersion": "3.0.1",
+   "UpdateKeys": [],
+   "ContentPackFor": {
+      "UniqueID": "Pathoschild.ContentPatcher",
+   },
+   "Dependencies": [
+      {
+         "UniqueID": "Candidus42.ImagEd",
+         "IsRequired": "true"
+      },
+   ]
+}

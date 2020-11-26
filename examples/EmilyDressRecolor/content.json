@@ -1,0 +1,73 @@
+// ATTENTION: "FromFile" is always evaluated, regardless of when conditions.
+// To circumvent that we have to put conditions into dynamic token sections.
+// The conditions in the "Changes" section just prevent loading of the modified image.
+{
+    "Format": "1.11",
+    "DynamicTokens": [
+       {
+          "Name": "dresscolor",
+          "Value": "#FF6F00",
+          "When": {
+              "DayOfWeek": "Monday"
+          }
+       },
+       {
+          "Name": "dresscolor",
+          "Value": "#FFE000",
+          "When": {
+              "DayOfWeek": "Tuesday"
+          }
+       },
+       {
+          "Name": "dresscolor",
+          "Value": "#7FFF00",
+          "When": {
+              "DayOfWeek": "Wednesday"
+          }
+       },
+       {
+          "Name": "dresscolor",
+          "Value": "#007F7F",
+          "When": {
+              "DayOfWeek": "Thursday"
+          }
+       },
+       {
+          "Name": "dresscolor",
+          "Value": "#1F1FEF",
+          "When": {
+              "DayOfWeek": "Friday"
+          }
+       },
+       {
+          "Name": "dresscolor",
+          "Value": "#EF1FEF",
+          "When": {
+              "DayOfWeek": "Saturday"
+          }
+       },
+       // Sunday: Dress unmodified.
+    ],
+    "Changes": [
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, {{dresscolor}}, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              // Sunday: Dress unmodified.
+              "DayOfWeek": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"
+          }
+       },
+       {
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, {{dresscolor}}, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              // Sunday: Dress unmodified.
+              "DayOfWeek": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"
+          }
+       },
+    ]
+}
