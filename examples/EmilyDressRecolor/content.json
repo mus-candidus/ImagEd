@@ -1,73 +1,120 @@
-// ATTENTION: "FromFile" is always evaluated, regardless of when conditions.
-// To circumvent that we have to put conditions into dynamic token sections.
-// The conditions in the "Changes" section just prevent loading of the modified image.
 {
-    "Format": "1.11",
-    "DynamicTokens": [
+    "Format": "1.18",
+    "Changes": [
+       // Monday
        {
-          "Name": "dresscolor",
-          "Value": "#FF6F00",
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #FF6F00, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Monday"
           }
        },
        {
-          "Name": "dresscolor",
-          "Value": "#FFE000",
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #FF6F00, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              "DayOfWeek": "Monday"
+          }
+       },
+       // Tuesday
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #FFE000, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Tuesday"
           }
        },
        {
-          "Name": "dresscolor",
-          "Value": "#7FFF00",
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #FFE000, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              "DayOfWeek": "Tuesday"
+          }
+       },
+       // Wednesday
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #7FFF00, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Wednesday"
           }
        },
        {
-          "Name": "dresscolor",
-          "Value": "#007F7F",
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #7FFF00, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              "DayOfWeek": "Wednesday"
+          }
+       },
+       // Thursday
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #007F7F, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Thursday"
           }
        },
        {
-          "Name": "dresscolor",
-          "Value": "#1F1FEF",
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #007F7F, DesaturateHSV}}",
+          "PatchMode": "Overlay",
+          "When": {
+              "DayOfWeek": "Thursday"
+          }
+       },
+       // Friday
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #1F1FEF, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Friday"
           }
        },
        {
-          "Name": "dresscolor",
-          "Value": "#EF1FEF",
+          "Action": "EditImage",
+          "Target": "Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #1F1FEF, DesaturateHSV}}",
+          "PatchMode": "Overlay",
           "When": {
-              "DayOfWeek": "Saturday"
+              "DayOfWeek": "Friday"
           }
        },
-       // Sunday: Dress unmodified.
-    ],
-    "Changes": [
+       // Saturday
        {
           "Action": "EditImage",
           "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, {{dresscolor}}, DesaturateHSV}}",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #EF1FEF, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
-              // Sunday: Dress unmodified.
-              "DayOfWeek": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"
+              "DayOfWeek": "Saturday"
           }
        },
        {
           "Action": "EditImage",
           "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, {{dresscolor}}, DesaturateHSV}}",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #EF1FEF, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
-              // Sunday: Dress unmodified.
-              "DayOfWeek": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"
+              "DayOfWeek": "Saturday"
           }
        },
+       // Sunday: Dress unmodified.
     ]
 }
