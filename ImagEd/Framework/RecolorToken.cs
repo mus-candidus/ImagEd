@@ -141,7 +141,7 @@ namespace ImagEd.Framework {
                 Color pixel = Desaturation.Desaturate(sourcePixels[i], desaturationMode);
                 // Treat mask as grayscale (luma).
                 byte maskValue = Desaturation.Desaturate(maskPixels[i], Desaturation.Mode.DesaturateLuma).R;
-                // Multiplication is all we need: If maskValue is zero the resulting pixel is zero (TrasparentBlack).
+                // Multiplication is all we need: If maskValue is zero the resulting pixel is zero (TransparentBlack).
                 extractedPixels[i] = pixel * (maskValue / 255.0f);
             }
 
@@ -155,7 +155,10 @@ namespace ImagEd.Framework {
                               ? $"{inputData.AssetName}.png"
                               : inputData.SourcePath;
 
-            return Utility.AddFileNameSuffix(Path.Combine("generated", outputPath), "recolored");
+            // Encode configuration to avoid file name collisions.
+            string suffix = $"recolored_{(int) inputData.DesaturationMode}_{inputData.BlendColor.PackedValue}";
+
+            return Utility.AddFileNameSuffix(Path.Combine("generated", outputPath), suffix);
         }
     }
 }
