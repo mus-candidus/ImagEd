@@ -4,17 +4,8 @@
        // Monday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #FF6F00, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Monday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #FF6F00, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #FF6F00, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Monday"
@@ -23,17 +14,8 @@
        // Tuesday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #FFE000, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Tuesday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #FFE000, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #FFE000, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Tuesday"
@@ -42,17 +24,8 @@
        // Wednesday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #7FFF00, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Wednesday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #7FFF00, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #7FFF00, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Wednesday"
@@ -61,17 +34,8 @@
        // Thursday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #007F7F, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Thursday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #007F7F, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #007F7F, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Thursday"
@@ -80,17 +44,8 @@
        // Friday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #1F1FEF, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Friday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #1F1FEF, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #1F1FEF, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Friday"
@@ -99,17 +54,8 @@
        // Saturday
        {
           "Action": "EditImage",
-          "Target": "Characters/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Characters/Emily, gamecontent, assets/Characters/Emily_dress_mask.png, #EF1FEF, DesaturateHSV}}",
-          "PatchMode": "Overlay",
-          "When": {
-              "DayOfWeek": "Saturday"
-          }
-       },
-       {
-          "Action": "EditImage",
-          "Target": "Portraits/Emily",
-          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, Portraits/Emily, gamecontent, assets/Portraits/Emily_dress_mask.png, #EF1FEF, DesaturateHSV}}",
+          "Target": "Characters/Emily, Portraits/Emily",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.EmilyDressRecolor, {{Target}}, gamecontent, assets/{{Target}}_dress_mask.png, #EF1FEF, DesaturateHSV}}",
           "PatchMode": "Overlay",
           "When": {
               "DayOfWeek": "Saturday"
