@@ -1,0 +1,11 @@
+{
+  "Format": "1.18",
+  "Changes": [
+       {
+          "Action": "EditImage",
+          "Target": "Characters/Abigail",
+          "FromFile": "{{Candidus42.ImagEd/Recolor: Candidus42.AbigailBlackFormalDresses, Characters/Abigail, gamecontent, assets/Characters/Abigail_formaldresses_mask.png, #303030}}",
+          "PatchMode": "Overlay"
+       },
+    ]
+}
