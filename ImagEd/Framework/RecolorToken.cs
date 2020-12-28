@@ -156,7 +156,7 @@ namespace ImagEd.Framework {
                               : inputData.SourcePath;
 
             // Encode configuration to avoid file name collisions.
-            string suffix = $"recolored_{inputData.GetHashCode()}";
+            string suffix = $"recolored_{(uint) inputData.GetHashCode()}";
 
             return Utility.AddFileNameSuffix(Path.Combine("generated", outputPath), suffix);
         }
