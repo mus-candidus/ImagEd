@@ -78,7 +78,7 @@ namespace ImagEd.Framework {
 
             IContentPack contentPack = Utility.GetContentPackFromModInfo(helper_.ModRegistry.Get(inputData.ContentPackName));
             monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
-            monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}");
+            monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}");
 
             // "gamecontent" means loading from game folder.
             Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
@@ -91,9 +91,21 @@ namespace ImagEd.Framework {
                                                   inputData.DesaturationMode)
                                 : source;
 
-            Texture2D target = inputData.FlipHorizontally
-                             ? FlipHorizontally(ColorBlend(extracted, inputData.BlendColor))
-                             : ColorBlend(extracted, inputData.BlendColor);
+            Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
+
+            Texture2D target;
+            if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
+                target = FlipHorizontally(extracted);
+            }
+            else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
+                target = FlipVertically(extracted);
+            }
+            else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
+                target = FlipVertically(FlipHorizontally(extracted));
+            }
+            else {
+                target = extracted;
+            }
 
             // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
             string generatedFilePath = GenerateFilePath(inputData);
@@ -139,6 +151,21 @@ namespace ImagEd.Framework {
                     int lineBegin = j * source.Width;
                     flippedPixels[lineBegin + i] = sourcePixels[lineBegin + source.Width - i - 1];
                 }
+            }
+
+            Texture2D flipped = Utility.ArrayToTexture(flippedPixels, source.Width, source.Height);
+
+            return flipped;
+        }
+
+        /// <summary>Flips an image vertically.</summary>
+        private Texture2D FlipVertically(Texture2D source) {
+            Color[] sourcePixels = Utility.TextureToArray(source);
+            Color[] flippedPixels = new Color[source.Width * source.Height];
+
+            for (int j = 0; j < source.Height; j++) {
+                // Flip vertically.
+                Array.Copy(sourcePixels, j * source.Width, flippedPixels, (source.Height - j - 1) * source.Width, source.Width);
             }
 
             Texture2D flipped = Utility.ArrayToTexture(flippedPixels, source.Width, source.Height);

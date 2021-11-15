@@ -12,7 +12,7 @@ namespace ImagEd.Framework {
         public Color BlendColor { get; private set; }
         public string MaskPath { get; private set; }
         public Desaturation.Mode DesaturationMode { get; private set; }
-        public bool FlipHorizontally { get; private set; }
+        public Flip.Mode FlipMode { get; private set; }
 
         /// <inheritdoc />
         public override bool Equals(object obj) {
@@ -26,7 +26,7 @@ namespace ImagEd.Framework {
                 && this.BlendColor.Equals(args.BlendColor)
                 && this.MaskPath.Equals(args.MaskPath)
                 && this.DesaturationMode.Equals(args.DesaturationMode)
-                && this.FlipHorizontally.Equals(args.FlipHorizontally);
+                && this.FlipMode.Equals(args.FlipMode);
         }
 
         /// <inheritdoc />
@@ -38,7 +38,7 @@ namespace ImagEd.Framework {
                                 this.BlendColor,
                                 this.MaskPath,
                                 this.DesaturationMode,
-                                this.FlipHorizontally)
+                                this.FlipMode)
                         .GetHashCode();
         }
 
@@ -63,9 +63,9 @@ namespace ImagEd.Framework {
                 DesaturationMode = tempInput.Length > 5
                                  ? Desaturation.ParseEnum(tempInput[5].Trim())
                                  : Desaturation.Mode.None,
-                FlipHorizontally = tempInput.Length > 6
-                                 ? bool.Parse(tempInput[6].Trim())
-                                 : false
+                FlipMode = tempInput.Length > 6
+                         ? Flip.ParseEnum(tempInput[6].Trim())
+                         : Flip.Mode.None
             };
         }
     }
