@@ -91,7 +91,9 @@ namespace ImagEd.Framework {
                                                   inputData.DesaturationMode)
                                 : source;
 
-            Texture2D target = ColorBlend(extracted, inputData.BlendColor);
+            Texture2D target = inputData.FlipHorizontally
+                             ? FlipHorizontally(ColorBlend(extracted, inputData.BlendColor))
+                             : ColorBlend(extracted, inputData.BlendColor);
 
             // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
             string generatedFilePath = GenerateFilePath(inputData);
@@ -111,8 +113,7 @@ namespace ImagEd.Framework {
 
         /// <summary>Color blending (multiplication).</summary>
         private Texture2D ColorBlend(Texture2D source, Color blendColor) {
-            Color[] sourcePixels = new Color[source.Width * source.Height];
-            source.GetData(sourcePixels);
+            Color[] sourcePixels = Utility.TextureToArray(source);
             // Renderer expects premultiplied alpha.
             for (int i = 0; i < sourcePixels.Length; i++) {
                 sourcePixels[i]
@@ -125,6 +126,24 @@ namespace ImagEd.Framework {
             Texture2D blended = Utility.ArrayToTexture(sourcePixels, source.Width, source.Height);
 
             return blended;
+        }
+
+        /// <summary>Flips an image horizontally.</summary>
+        private Texture2D FlipHorizontally(Texture2D source) {
+            Color[] sourcePixels = Utility.TextureToArray(source);
+            Color[] flippedPixels = new Color[source.Width * source.Height];
+
+            for (int j = 0; j < source.Height; j++) {
+                for (int i = 0; i < source.Width; i++) {
+                    // Flip horizontally.
+                    int lineBegin = j * source.Width;
+                    flippedPixels[lineBegin + i] = sourcePixels[lineBegin + source.Width - i - 1];
+                }
+            }
+
+            Texture2D flipped = Utility.ArrayToTexture(flippedPixels, source.Width, source.Height);
+
+            return flipped;
         }
 
         /// <summary>Extracts a sub image using the given mask.</summary>
