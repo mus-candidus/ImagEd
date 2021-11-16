@@ -95,13 +95,13 @@ namespace ImagEd.Framework {
 
             Texture2D target;
             if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
-                target = FlipHorizontally(extracted);
+                target = Flip.FlipHorizontally(extracted);
             }
             else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
-                target = FlipVertically(extracted);
+                target = Flip.FlipVertically(extracted);
             }
             else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
-                target = FlipVertically(FlipHorizontally(extracted));
+                target = Flip.FlipVertically(Flip.FlipHorizontally(extracted));
             }
             else {
                 target = extracted;
@@ -138,39 +138,6 @@ namespace ImagEd.Framework {
             Texture2D blended = Utility.ArrayToTexture(sourcePixels, source.Width, source.Height);
 
             return blended;
-        }
-
-        /// <summary>Flips an image horizontally.</summary>
-        private Texture2D FlipHorizontally(Texture2D source) {
-            Color[] sourcePixels = Utility.TextureToArray(source);
-            Color[] flippedPixels = new Color[source.Width * source.Height];
-
-            for (int j = 0; j < source.Height; j++) {
-                for (int i = 0; i < source.Width; i++) {
-                    // Flip horizontally.
-                    int lineBegin = j * source.Width;
-                    flippedPixels[lineBegin + i] = sourcePixels[lineBegin + source.Width - i - 1];
-                }
-            }
-
-            Texture2D flipped = Utility.ArrayToTexture(flippedPixels, source.Width, source.Height);
-
-            return flipped;
-        }
-
-        /// <summary>Flips an image vertically.</summary>
-        private Texture2D FlipVertically(Texture2D source) {
-            Color[] sourcePixels = Utility.TextureToArray(source);
-            Color[] flippedPixels = new Color[source.Width * source.Height];
-
-            for (int j = 0; j < source.Height; j++) {
-                // Flip vertically.
-                Array.Copy(sourcePixels, j * source.Width, flippedPixels, (source.Height - j - 1) * source.Width, source.Width);
-            }
-
-            Texture2D flipped = Utility.ArrayToTexture(flippedPixels, source.Width, source.Height);
-
-            return flipped;
         }
 
         /// <summary>Extracts a sub image using the given mask.</summary>
