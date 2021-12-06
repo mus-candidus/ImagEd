@@ -95,16 +95,16 @@ namespace ImagEd.Framework {
 
             Texture2D target;
             if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
-                target = Flip.FlipHorizontally(extracted);
+                target = Flip.FlipHorizontally(blended);
             }
             else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
-                target = Flip.FlipVertically(extracted);
+                target = Flip.FlipVertically(blended);
             }
             else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
-                target = Flip.FlipVertically(Flip.FlipHorizontally(extracted));
+                target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
             }
             else {
-                target = extracted;
+                target = blended;
             }
 
             // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
