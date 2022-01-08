@@ -78,7 +78,7 @@ namespace ImagEd.Framework {
 
             IContentPack contentPack = Utility.GetContentPackFromModInfo(helper_.ModRegistry.Get(inputData.ContentPackName));
             monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
-            monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}");
+            monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}, brightness {inputData.Brightness}");
 
             // "gamecontent" means loading from game folder.
             Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
@@ -88,7 +88,8 @@ namespace ImagEd.Framework {
             Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
                                 ? ExtractSubImage(source,
                                                   contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
-                                                  inputData.DesaturationMode)
+                                                  inputData.DesaturationMode,
+                                                  inputData.Brightness)
                                 : source;
 
             Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
@@ -140,10 +141,13 @@ namespace ImagEd.Framework {
             return blended;
         }
 
-        /// <summary>Extracts a sub image using the given mask.</summary>
-        private Texture2D ExtractSubImage(Texture2D source, Texture2D mask, Desaturation.Mode desaturationMode) {
+        /// <summary>Extracts a sub image using the given mask and brightness.</summary>
+        private Texture2D ExtractSubImage(Texture2D source, Texture2D mask, Desaturation.Mode desaturationMode, float brightness) {
             if (mask.Width != source.Width || mask.Height != source.Height) {
                 throw new ArgumentException("Sizes of image and mask don't match");
+            }
+            if (brightness < 0.0f) {
+                throw new ArgumentException("Brightness must not be negative");
             }
 
             Color[] sourcePixels = Utility.TextureToArray(source);
@@ -155,7 +159,8 @@ namespace ImagEd.Framework {
                 // Treat mask as grayscale (luma).
                 byte maskValue = Desaturation.Desaturate(maskPixels[i], Desaturation.Mode.DesaturateLuma).R;
                 // Multiplication is all we need: If maskValue is zero the resulting pixel is zero (TransparentBlack).
-                extractedPixels[i] = pixel * (maskValue / 255.0f);
+                // Clamping is done automatically on assignment.
+                extractedPixels[i] = pixel * (maskValue / 255.0f) * brightness;
             }
 
             return Utility.ArrayToTexture(extractedPixels, source.Width, source.Height);
