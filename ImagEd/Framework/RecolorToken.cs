@@ -5,6 +5,7 @@ using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 using StardewModdingAPI;
 
@@ -80,46 +81,55 @@ namespace ImagEd.Framework {
             monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
             monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}, brightness {inputData.Brightness}");
 
-            // "gamecontent" means loading from game folder.
-            Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
-                             ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
-                             : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
+            string generatedFilePath;
+            try {
+                // "gamecontent" means loading from game folder.
+                Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
+                                 ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
+                                 : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
 
-            Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
-                                ? ExtractSubImage(source,
-                                                  contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
-                                                  inputData.DesaturationMode,
-                                                  inputData.Brightness)
-                                : source;
+                Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
+                                    ? ExtractSubImage(source,
+                                                      contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
+                                                      inputData.DesaturationMode,
+                                                      inputData.Brightness)
+                                    : source;
 
-            Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
+                Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
 
-            Texture2D target;
-            if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
-                target = Flip.FlipHorizontally(blended);
+                Texture2D target;
+                if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
+                    target = Flip.FlipHorizontally(blended);
+                }
+                else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
+                    target = Flip.FlipVertically(blended);
+                }
+                else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
+                    target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
+                }
+                else {
+                    target = blended;
+                }
+
+                // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
+                generatedFilePath = GenerateFilePath(inputData);
+                string generatedFilePathAbsolute = Path.Combine(contentPack.DirectoryPath, generatedFilePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
+                using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
+                    target.SaveAsPng(fs, target.Width, target.Height);
+                    fs.Close();
+                }
+
+                monitor_.Log($"Generated file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
+
+                helper_.Content.InvalidateCache(inputData.AssetName);
             }
-            else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
-                target = Flip.FlipVertically(blended);
-            }
-            else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
-                target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
-            }
-            else {
-                target = blended;
-            }
+            catch (ContentLoadException) {
+                // Asset is not available, return its name to prevent game from crashing.
+                monitor_.Log($"Ignoring unavailable asset {inputData.AssetName}. If this was caused by patch reload you can ignore it, the next 10min update cycle should do a proper reload.", LogLevel.Info);
 
-            // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
-            string generatedFilePath = GenerateFilePath(inputData);
-            string generatedFilePathAbsolute = Path.Combine(contentPack.DirectoryPath, generatedFilePath);
-            Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
-            using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
-                target.SaveAsPng(fs, target.Width, target.Height);
-                fs.Close();
+                generatedFilePath = inputData.AssetName;
             }
-
-            monitor_.Log($"Generated file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
-
-            helper_.Content.InvalidateCache(inputData.AssetName);
 
             yield return generatedFilePath;
         }
