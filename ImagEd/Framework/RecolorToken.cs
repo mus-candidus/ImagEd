@@ -72,63 +72,74 @@ namespace ImagEd.Framework {
         /// <param name="input">The input argument, if applicable.</param>
         public IEnumerable<string> GetValues(string input) {
             RecolorTokenArguments inputData = RecolorTokenArguments.Parse(input);
-            if (!(inputData.Equals(previousInputData_))) {
-                mustUpdateContext_ = true;
-            }
-            previousInputData_ = inputData;
 
             IContentPack contentPack = Utility.GetContentPackFromModInfo(helper_.ModRegistry.Get(inputData.ContentPackName));
-            monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
-            monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}, brightness {inputData.Brightness}");
 
-            string generatedFilePath;
-            try {
-                // "gamecontent" means loading from game folder.
-                Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
-                                 ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
-                                 : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
+            // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
+            string generatedFilePath = GenerateFilePath(inputData);
+            string generatedFilePathAbsolute = Path.Combine(contentPack.DirectoryPath, generatedFilePath);
 
-                Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
-                                    ? ExtractSubImage(source,
-                                                      contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
-                                                      inputData.DesaturationMode,
-                                                      inputData.Brightness)
-                                    : source;
+            if (!(inputData.Equals(previousInputData_))) {
+                mustUpdateContext_ = true;
 
-                Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
+                previousInputData_ = inputData;
 
-                Texture2D target;
-                if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
-                    target = Flip.FlipHorizontally(blended);
-                }
-                else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
-                    target = Flip.FlipVertically(blended);
-                }
-                else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
-                    target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
+                monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
+                monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}, brightness {inputData.Brightness}");
+
+                // Skip actions if file was found.
+                if (File.Exists(generatedFilePathAbsolute)) {
+                    monitor_.Log($"Found existing file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
+
+                    helper_.Content.InvalidateCache(inputData.AssetName);
                 }
                 else {
-                    target = blended;
+                    try {
+                        // "gamecontent" means loading from game folder.
+                        Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
+                                         ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
+                                         : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
+
+                        Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
+                                            ? ExtractSubImage(source,
+                                                              contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
+                                                              inputData.DesaturationMode,
+                                                              inputData.Brightness)
+                                            : source;
+
+                        Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
+
+                        Texture2D target;
+                        if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
+                            target = Flip.FlipHorizontally(blended);
+                        }
+                        else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
+                            target = Flip.FlipVertically(blended);
+                        }
+                        else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
+                            target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
+                        }
+                        else {
+                            target = blended;
+                        }
+
+                        Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
+                        using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
+                            target.SaveAsPng(fs, target.Width, target.Height);
+                            fs.Close();
+                        }
+
+                        monitor_.Log($"Generated file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
+
+                        helper_.Content.InvalidateCache(inputData.AssetName);
+                    }
+                    catch (ContentLoadException) {
+                        // Asset is not available, return its name to prevent game from crashing.
+                        monitor_.Log($"Ignoring unavailable asset {inputData.AssetName}. If this was caused by patch reload you can ignore it, the next 10min update cycle should do a proper reload.", LogLevel.Info);
+
+                        generatedFilePath = inputData.AssetName;
+                    }
                 }
-
-                // ATTENTION: In order to load files we just generated we need at least ContentPatcher 1.18.3 .
-                generatedFilePath = GenerateFilePath(inputData);
-                string generatedFilePathAbsolute = Path.Combine(contentPack.DirectoryPath, generatedFilePath);
-                Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
-                using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
-                    target.SaveAsPng(fs, target.Width, target.Height);
-                    fs.Close();
-                }
-
-                monitor_.Log($"Generated file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
-
-                helper_.Content.InvalidateCache(inputData.AssetName);
-            }
-            catch (ContentLoadException) {
-                // Asset is not available, return its name to prevent game from crashing.
-                monitor_.Log($"Ignoring unavailable asset {inputData.AssetName}. If this was caused by patch reload you can ignore it, the next 10min update cycle should do a proper reload.", LogLevel.Info);
-
-                generatedFilePath = inputData.AssetName;
             }
 
             yield return generatedFilePath;
@@ -184,7 +195,7 @@ namespace ImagEd.Framework {
                               : inputData.SourcePath;
 
             // Encode configuration to avoid file name collisions.
-            string suffix = $"recolored_{(uint) inputData.GetHashCode()}";
+            string suffix = $"recolored_{inputData.GetUniqueFileSuffix()}";
 
             return Utility.AddFileNameSuffix(Path.Combine("generated", outputPath), suffix);
         }

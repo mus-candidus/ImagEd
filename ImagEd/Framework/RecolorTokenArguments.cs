@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Security.Cryptography;
 
 using Microsoft.Xna.Framework;
 
@@ -43,6 +45,28 @@ namespace ImagEd.Framework {
                                 this.FlipMode,
                                 this.Brightness)
                         .GetHashCode();
+        }
+
+        ///<summary> Returns a unique suffix to identify the file in different runs of SDV.</summary>
+        public string GetUniqueFileSuffix() {
+            // ATTENTION: We can't persist the result of GetHashCode() because it's not consistent between several runs of a program.
+            // This is by design and a security feature of since the .NET Core 1.0, see
+            // https://docs.microsoft.com/en-us/dotnet/api/system.string.gethashcode?view=netcore-1.0
+            // To get consistent results required to identify the file on next run we use MD5 over all token arguments.
+            string argsInfo = $"{this.ContentPackName}"
+                            + $"{this.AssetName}"
+                            + $"{this.SourcePath}"
+                            + $"{this.BlendColor}"
+                            + $"{this.MaskPath}"
+                            + $"{this.DesaturationMode}"
+                            + $"{this.FlipMode}"
+                            + $"{this.Brightness}";
+
+            using (MD5 md5algorithm = MD5.Create()) {
+                byte[] argsMd5 = md5algorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(argsInfo));
+
+                return string.Concat(argsMd5.Select(c => $"{c:x2}"));
+            }
         }
 
         /// <summary>Parse JSON string and return token arguments.</summary>
