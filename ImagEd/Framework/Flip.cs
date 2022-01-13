@@ -34,10 +34,13 @@ namespace ImagEd.Framework {
                 flipped = FlipVertically(source);
             }
             else if (mode == Mode.FlipBoth) {
-                flipped = FlipVertically(FlipHorizontally(source));
+                using (Texture2D temp = FlipHorizontally(source)) {
+                    flipped = FlipVertically(temp);
+                }
             }
             else {
-                flipped = source;
+                // Return a copy so it can be disposed safely.
+                flipped = Utility.ArrayToTexture(Utility.TextureToArray(source), source.Width, source.Height);
             }
 
             return flipped;

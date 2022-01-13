@@ -95,25 +95,23 @@ namespace ImagEd.Framework {
                 }
                 else {
                     try {
-                        // "gamecontent" means loading from game folder.
+                        // "gamecontent" means loading from game folder. Don't dispose an asset source!
                         Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
                                          ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
                                          : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
 
-                        Texture2D mask = inputData.MaskPath.ToLowerInvariant() != "none" ? contentPack.LoadAsset<Texture2D>(inputData.MaskPath) : null;
-                        Texture2D extracted = ExtractSubImage(source,
-                                                              mask,
-                                                              inputData.DesaturationMode,
-                                                              inputData.Brightness);
+                        Texture2D mask = inputData.MaskPath.ToLowerInvariant() != "none"
+                                       ? contentPack.LoadAsset<Texture2D>(inputData.MaskPath)
+                                       : null;
 
-                        Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
-
-                        Texture2D flipped = Flip.FlipImage(blended, inputData.FlipMode);
-
-                        Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
-                        using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
-                            flipped.SaveAsPng(fs, flipped.Width, flipped.Height);
-                            fs.Close();
+                        using (Texture2D extracted = ExtractSubImage(source, mask, inputData.DesaturationMode, inputData.Brightness))
+                        using (Texture2D blended = ColorBlend(extracted, inputData.BlendColor))
+                        using (Texture2D flipped = Flip.FlipImage(blended, inputData.FlipMode)) {
+                            Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
+                            using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
+                                flipped.SaveAsPng(fs, flipped.Width, flipped.Height);
+                                fs.Close();
+                            }
                         }
 
                         monitor_.Log($"Generated file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
