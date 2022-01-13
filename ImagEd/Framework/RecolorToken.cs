@@ -100,12 +100,11 @@ namespace ImagEd.Framework {
                                          ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
                                          : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
 
-                        Texture2D extracted = inputData.MaskPath.ToLowerInvariant() != "none"
-                                            ? ExtractSubImage(source,
-                                                              contentPack.LoadAsset<Texture2D>(inputData.MaskPath),
+                        Texture2D mask = inputData.MaskPath.ToLowerInvariant() != "none" ? contentPack.LoadAsset<Texture2D>(inputData.MaskPath) : null;
+                        Texture2D extracted = ExtractSubImage(source,
+                                                              mask,
                                                               inputData.DesaturationMode,
-                                                              inputData.Brightness)
-                                            : source;
+                                                              inputData.Brightness);
 
                         Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
 
@@ -164,7 +163,7 @@ namespace ImagEd.Framework {
 
         /// <summary>Extracts a sub image using the given mask and brightness.</summary>
         private Texture2D ExtractSubImage(Texture2D source, Texture2D mask, Desaturation.Mode desaturationMode, float brightness) {
-            if (mask.Width != source.Width || mask.Height != source.Height) {
+            if (mask != null && (mask.Width != source.Width || mask.Height != source.Height)) {
                 throw new ArgumentException("Sizes of image and mask don't match");
             }
             if (brightness < 0.0f) {
@@ -178,7 +177,7 @@ namespace ImagEd.Framework {
             for (int i = 0; i < sourcePixels.Length; i++) {
                 Color pixel = Desaturation.Desaturate(sourcePixels[i], desaturationMode);
                 // Treat mask as grayscale (luma).
-                byte maskValue = Desaturation.Desaturate(maskPixels[i], Desaturation.Mode.DesaturateLuma).R;
+                byte maskValue = mask != null ? Desaturation.Desaturate(maskPixels[i], Desaturation.Mode.DesaturateLuma).R : (byte) 0xFF;
                 // Multiplication is all we need: If maskValue is zero the resulting pixel is zero (TransparentBlack).
                 // Clamping is done automatically on assignment.
                 extractedPixels[i] = pixel * (maskValue / 255.0f) * brightness;
