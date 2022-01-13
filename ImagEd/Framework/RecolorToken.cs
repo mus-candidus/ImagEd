@@ -135,16 +135,17 @@ namespace ImagEd.Framework {
         /// <summary>Color blending (multiplication).</summary>
         private Texture2D ColorBlend(Texture2D source, Color blendColor) {
             Color[] sourcePixels = Utility.TextureToArray(source);
+            Color[] blendedPixels = new Color[source.Width * source.Height];
             // Renderer expects premultiplied alpha.
             for (int i = 0; i < sourcePixels.Length; i++) {
-                sourcePixels[i]
+                blendedPixels[i]
                     = new Color((byte) (sourcePixels[i].R * blendColor.R / 255 * blendColor.A / 255),
                                 (byte) (sourcePixels[i].G * blendColor.G / 255 * blendColor.A / 255),
                                 (byte) (sourcePixels[i].B * blendColor.B / 255 * blendColor.A / 255),
                                 (byte) (sourcePixels[i].A * blendColor.A / 255));
             }
 
-            Texture2D blended = Utility.ArrayToTexture(sourcePixels, source.Width, source.Height);
+            Texture2D blended = Utility.ArrayToTexture(blendedPixels, source.Width, source.Height);
 
             return blended;
         }
