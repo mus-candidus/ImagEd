@@ -24,6 +24,25 @@ namespace ImagEd.Framework {
             return Enum.TryParse<Mode>(flip, true, out Mode mode) ? mode : Mode.None;
         }
 
+        /// <summary>Flips an image using the given flip mode.</summary>
+        public static Texture2D FlipImage(Texture2D source, Mode mode) {
+            Texture2D flipped;
+            if (mode == Mode.FlipHorizontally) {
+                flipped = FlipHorizontally(source);
+            }
+            else if (mode == Mode.FlipVertically) {
+                flipped = FlipVertically(source);
+            }
+            else if (mode == Mode.FlipBoth) {
+                flipped = FlipVertically(FlipHorizontally(source));
+            }
+            else {
+                flipped = source;
+            }
+
+            return flipped;
+        }
+
         /// <summary>Flips an image horizontally.</summary>
         public static Texture2D FlipHorizontally(Texture2D source) {
             Color[] sourcePixels = Utility.TextureToArray(source);

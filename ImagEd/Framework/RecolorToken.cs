@@ -108,23 +108,11 @@ namespace ImagEd.Framework {
 
                         Texture2D blended = ColorBlend(extracted, inputData.BlendColor);
 
-                        Texture2D target;
-                        if (inputData.FlipMode == Flip.Mode.FlipHorizontally) {
-                            target = Flip.FlipHorizontally(blended);
-                        }
-                        else if (inputData.FlipMode == Flip.Mode.FlipVertically) {
-                            target = Flip.FlipVertically(blended);
-                        }
-                        else if (inputData.FlipMode == Flip.Mode.FlipBoth) {
-                            target = Flip.FlipVertically(Flip.FlipHorizontally(blended));
-                        }
-                        else {
-                            target = blended;
-                        }
+                        Texture2D flipped = Flip.FlipImage(blended, inputData.FlipMode);
 
                         Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
                         using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
-                            target.SaveAsPng(fs, target.Width, target.Height);
+                            flipped.SaveAsPng(fs, flipped.Width, flipped.Height);
                             fs.Close();
                         }
 
