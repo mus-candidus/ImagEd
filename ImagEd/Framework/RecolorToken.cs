@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
 using StardewModdingAPI;
+using StardewValley;
 
 
 namespace ImagEd.Framework {
@@ -96,9 +97,35 @@ namespace ImagEd.Framework {
                 else {
                     try {
                         // "gamecontent" means loading from game folder. Don't dispose an asset source!
-                        Texture2D source = inputData.SourcePath.ToLowerInvariant() == "gamecontent"
-                                         ? helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent)
-                                         : contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
+                        Texture2D source;
+                        if (inputData.SourcePath.ToLowerInvariant() == "gamecontent") {
+                            // ATTENTION: Game content requires special attention because the loaded assets modify themselves over time:
+                            // Game content contains vanilla assets only when game is loaded, otherwise the assets are already patched.
+                            // Luma desaturation and recoloring don't change brightness so they can be applied multiple times
+                            // without bad effects but changing brightness multiple times changes colors over time.
+                            // A way to prevent that is caching them in files once and using the cached versions as a base for modifications.
+                            string generatedBasePath = Path.Combine("generated", $"{inputData.AssetName}_gamecontent.png");
+                            string generatedBasePathAbsolute = Path.Combine(contentPack.DirectoryPath, generatedBasePath);
+                            Directory.CreateDirectory(Path.GetDirectoryName(generatedBasePathAbsolute));
+
+                            if (File.Exists(generatedBasePathAbsolute)) {
+                                using (FileStream fs = new FileStream(generatedBasePathAbsolute, FileMode.Open)) {
+                                    source = Texture2D.FromStream(Game1.graphics.GraphicsDevice, fs);
+                                }
+                                monitor_.Log($"Loading asset {inputData.AssetName} from existing cache file {generatedBasePathAbsolute}");
+                            }
+                            else {
+                                source = helper_.Content.Load<Texture2D>(inputData.AssetName, ContentSource.GameContent);
+                                using (FileStream fs = new FileStream(generatedBasePathAbsolute, FileMode.Create)) {
+                                    source.SaveAsPng(fs, source.Width, source.Height);
+                                    fs.Close();
+                                }
+                                monitor_.Log($"Saving asset {inputData.AssetName} in cache file {generatedBasePathAbsolute}");
+                            }
+                        }
+                        else {
+                            source = contentPack.LoadAsset<Texture2D>(inputData.SourcePath);
+                        }
 
                         Texture2D mask = inputData.MaskPath.ToLowerInvariant() != "none"
                                        ? contentPack.LoadAsset<Texture2D>(inputData.MaskPath)
