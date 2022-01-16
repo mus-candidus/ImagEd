@@ -88,6 +88,26 @@ namespace ImagEd.Framework {
                 monitor_.Log($"Content pack {contentPack.Manifest.UniqueID} requests recoloring of {inputData.AssetName}.");
                 monitor_.Log($"Recolor with {inputData.MaskPath} and {Utility.ColorToHtml(inputData.BlendColor)}, flip mode {inputData.FlipMode}, brightness {inputData.Brightness}");
 
+                // Check versions: If version of SDV or content pack changed we have to delete generated images.
+                string contentPackVersion = contentPack.Manifest.Version.ToString();
+                var versions = contentPack.ReadJsonFile<Dictionary<string, string>>("generated/versions.json") ?? new Dictionary<string, string>();
+                if (!versions.TryGetValue("StardewValley", out string stardewVersion) || stardewVersion != Game1.version) {
+                    versions["StardewValley"] = Game1.version;
+
+                    monitor_.Log($"Version of StardewValley changed from {stardewVersion ?? "(null)"} to {Game1.version}, deleting generated files.");
+                    Directory.Delete(Path.Combine(contentPack.DirectoryPath, "generated"), true);
+
+                    contentPack.WriteJsonFile("generated/versions.json", versions);
+                }
+                if (!versions.TryGetValue(contentPack.Manifest.UniqueID, out string modVersion) || modVersion != contentPackVersion) {
+                    versions[contentPack.Manifest.UniqueID] = contentPackVersion;
+
+                    monitor_.Log($"Version of content pack {contentPack.Manifest.UniqueID} changed from {modVersion ?? "(null)"} to {contentPackVersion}, deleting generated files.");
+                    Directory.Delete(Path.Combine(contentPack.DirectoryPath, "generated"), true);
+
+                    contentPack.WriteJsonFile("generated/versions.json", versions);
+                }
+
                 // Skip actions if file was found.
                 if (File.Exists(generatedFilePathAbsolute)) {
                     monitor_.Log($"Found existing file {generatedFilePathAbsolute}, returning relative path {generatedFilePath}");
