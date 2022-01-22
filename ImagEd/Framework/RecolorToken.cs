@@ -90,12 +90,15 @@ namespace ImagEd.Framework {
 
                 // Check versions: If version of SDV or content pack changed we have to delete generated images.
                 string contentPackVersion = contentPack.Manifest.Version.ToString();
+                string generatedDirectoryPathAbsolute = Path.Combine(contentPack.DirectoryPath, "generated");
                 var versions = contentPack.ReadJsonFile<Dictionary<string, string>>("generated/versions.json") ?? new Dictionary<string, string>();
                 if (!versions.TryGetValue("StardewValley", out string stardewVersion) || stardewVersion != Game1.version) {
                     versions["StardewValley"] = Game1.version;
 
                     monitor_.Log($"Version of StardewValley changed from {stardewVersion ?? "(null)"} to {Game1.version}, deleting generated files.");
-                    Directory.Delete(Path.Combine(contentPack.DirectoryPath, "generated"), true);
+                    if (Directory.Exists(generatedDirectoryPathAbsolute)) {
+                        Directory.Delete(generatedDirectoryPathAbsolute, true);
+                    }
 
                     contentPack.WriteJsonFile("generated/versions.json", versions);
                 }
@@ -103,7 +106,9 @@ namespace ImagEd.Framework {
                     versions[contentPack.Manifest.UniqueID] = contentPackVersion;
 
                     monitor_.Log($"Version of content pack {contentPack.Manifest.UniqueID} changed from {modVersion ?? "(null)"} to {contentPackVersion}, deleting generated files.");
-                    Directory.Delete(Path.Combine(contentPack.DirectoryPath, "generated"), true);
+                    if (Directory.Exists(generatedDirectoryPathAbsolute)) {
+                        Directory.Delete(generatedDirectoryPathAbsolute, true);
+                    }
 
                     contentPack.WriteJsonFile("generated/versions.json", versions);
                 }
