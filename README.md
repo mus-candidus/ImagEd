@@ -19,7 +19,7 @@ Provides the token **ImageEd/Recolor** which takes an image to recolor and optio
 4. Mask image or "none". Mask is supposed to be a grayscale image so we always desaturate it (mode is DesaturateLuma).
 5. Blend color in #RRGGBB format ([Hex triplet](https://en.wikipedia.org/wiki/Web_colors#Hex_triplet)). The non-standard format #RRGGBBAA is supported to set an alpha value.
 6. Desaturation mode: DesaturateHSV, DesaturateHSL, DesaturateHSI, DesaturateLuma or None. This is an optional argument, default is None.
-7. Flip mode: FlipHorizontally, FlipVertically, FlipBoth or None. This is an optional argument, default is None. Attention: This feature is not useful in most cases, especially not for NPCs. The whole image is flipped so if you flip a sprite sheet all sprite indexes are wrong afterwards. Nonetheless you can do cool things with flipping. You have been warned :-)
+7. Flip mode: FlipHorizontally, FlipVertically, FlipBoth or None. This is an optional argument, default is None. Attention: This feature is not useful in most cases, especially not for NPCs. The whole image is flipped so if you flip a sprite sheet all sprite indexes are wrong afterwards. Also keep in mind that the flipped image is always a combination of base image and overlay because flipping an overlay without its base image wouldn't make sense. Nonetheless you can do cool things with flipping. You have been warned :-)
 8. Brightness: Float value that will be multiplied with the extracted image before color blending. Use a value bigger than 1.0 to brighten the image. This is an optional argument, default is 1.0.
 
 Example:

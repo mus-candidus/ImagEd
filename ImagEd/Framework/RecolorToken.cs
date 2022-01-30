@@ -158,7 +158,7 @@ namespace ImagEd.Framework {
 
                         using (Texture2D extracted = ExtractSubImage(source, mask, inputData.DesaturationMode, inputData.Brightness))
                         using (Texture2D blended = ColorBlend(extracted, inputData.BlendColor))
-                        using (Texture2D flipped = Flip.FlipImage(blended, inputData.FlipMode)) {
+                        using (Texture2D flipped = FlipImage(source, blended, inputData.FlipMode)) {
                             Directory.CreateDirectory(Path.GetDirectoryName(generatedFilePathAbsolute));
                             using (FileStream fs = new FileStream(generatedFilePathAbsolute, FileMode.Create)) {
                                 flipped.SaveAsPng(fs, flipped.Width, flipped.Height);
@@ -223,6 +223,45 @@ namespace ImagEd.Framework {
             }
 
             return Utility.ArrayToTexture(extractedPixels, source.Width, source.Height);
+        }
+
+        /// <summary>Flipping is special: We can't just flip the overlay, we need the whole image!</summary>
+        private Texture2D FlipImage(Texture2D baseImage, Texture2D overlay, Flip.Mode flipMode) {
+            if (flipMode == Flip.Mode.None) {
+                // Return a copy so it can be disposed safely.
+                return Utility.ArrayToTexture(Utility.TextureToArray(overlay), overlay.Width, overlay.Height);
+            }
+            else {
+                // Flip the whole image.
+                using (Texture2D image = AlphaBlend(baseImage, overlay)) {
+                    return Flip.FlipImage(image, flipMode);
+                }
+            }
+        }
+
+        /// <summary>Alpha blending.</summary>
+        private Texture2D AlphaBlend(Texture2D baseImage, Texture2D overlay) {
+            if (overlay.Width != baseImage.Width || overlay.Height != baseImage.Height) {
+                throw new ArgumentException("Sizes of base image and overlay don't match");
+            }
+
+            Color[] baseImagePixels = Utility.TextureToArray(baseImage);
+            Color[] overlayPixels = Utility.TextureToArray(overlay);
+            Color[] blendedPixels = new Color[baseImage.Width * baseImage.Height];
+            // Renderer expects premultiplied alpha.
+            // https://en.wikipedia.org/wiki/Alpha_compositing
+            for (int i = 0; i < baseImagePixels.Length; i++) {
+                float alpha = 1.0f - overlayPixels[i].A / 255.0f;
+                blendedPixels[i]
+                    = new Color((byte) (overlayPixels[i].R + baseImagePixels[i].R * alpha),
+                                (byte) (overlayPixels[i].G + baseImagePixels[i].G * alpha),
+                                (byte) (overlayPixels[i].B + baseImagePixels[i].B * alpha),
+                                (byte) (overlayPixels[i].A + baseImagePixels[i].A * alpha));
+            }
+
+            Texture2D blended = Utility.ArrayToTexture(blendedPixels, baseImage.Width, baseImage.Height);
+
+            return blended;
         }
 
         /// <summary>Generates a file path from token arguments.</summary>
